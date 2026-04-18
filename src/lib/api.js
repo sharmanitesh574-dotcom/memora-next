@@ -16,6 +16,13 @@ async function request(path, options = {}) {
     headers['Authorization'] = `Bearer ${token}`
   }
 
+  // Send user's preferred language to backend for AI responses
+  if (typeof window !== 'undefined') {
+    const lang = localStorage.getItem('memora-lang') || navigator.language?.slice(0, 2) || 'en'
+    headers['X-Memora-Language'] = lang
+    headers['X-Memora-Locale'] = navigator.language || 'en-US'
+  }
+
   // Don't set Content-Type for FormData (browser sets boundary automatically)
   if (!(options.body instanceof FormData)) {
     headers['Content-Type'] = 'application/json'

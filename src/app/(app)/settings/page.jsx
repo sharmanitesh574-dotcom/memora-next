@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
 import { useUserStore } from '@/stores'
-import { User, Brain, Moon, Sun, Bell, MessageCircle, Lock, Smartphone, Phone } from 'lucide-react'
+import { User, Brain, Moon, Sun, Bell, MessageCircle, Lock, Smartphone, Phone, Globe } from 'lucide-react'
+import { LANGUAGES, getLanguage, setLanguage as setLangStorage } from '@/i18n/translations'
 
 export default function SettingsPage() {
   const user = useUserStore((s) => s.user)
   const plan = useUserStore((s) => s.plan)
   const [darkMode, setDarkMode] = useState(false)
+  const [lang, setLang] = useState('en')
   const [profileText, setProfileText] = useState('')
   const [profileStatus, setProfileStatus] = useState('')
   const [profileData, setProfileData] = useState(null)
@@ -21,6 +23,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setDarkMode(document.documentElement.classList.contains('dark'))
+    setLang(getLanguage())
     loadProfile()
     loadTelegramStatus()
     loadWhatsAppStatus()
@@ -188,6 +191,40 @@ export default function SettingsPage() {
                 style={{ left: darkMode ? '22px' : '2px' }}
               />
             </button>
+          </div>
+        </Section>
+
+        {/* Language */}
+        <Section title="Language" icon={Globe}>
+          <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
+            Choose your preferred language for the UI and AI responses.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => {
+                  setLang(l.code)
+                  setLangStorage(l.code)
+                  window.location.reload()
+                }}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left cursor-pointer transition-all"
+                style={{
+                  background: lang === l.code ? 'rgba(124,92,252,0.06)' : 'var(--bg-muted)',
+                  border: `1px solid ${lang === l.code ? 'rgba(124,92,252,0.2)' : 'var(--border-default)'}`,
+                }}
+              >
+                <div className="flex-1">
+                  <p className="text-xs font-medium" style={{ color: lang === l.code ? 'var(--color-brand)' : 'var(--text-primary)' }}>
+                    {l.native}
+                  </p>
+                  <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{l.label}</p>
+                </div>
+                {lang === l.code && (
+                  <div className="w-2 h-2 rounded-full shrink-0" style={{ background: 'var(--color-brand)' }} />
+                )}
+              </button>
+            ))}
           </div>
         </Section>
 
