@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════
+   MEMORA DESIGN SYSTEM v3
+   ══════════════════════════════════════ */
+
+@theme {
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Brand */
+  --color-brand: #5B47E0;
+  --color-brand-hover: #4A38D0;
+  --color-brand-light: oklch(0.93 0.04 280);
+
+  /* Semantic palette */
+  --color-emerald: #16A37A;
+  --color-amber: #C47F17;
+  --color-coral: #D14E6B;
+  --color-ocean: #1A6FA8;
+  --color-violet: #7C3AED;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 110ms;
+  --duration-mid: 190ms;
+  --duration-slow: 300ms;
+}
+
+/* ── Light mode (default) ── */
+:root {
+  --bg-primary: #FAFAF8;
+  --bg-surface: #FFFFFF;
+  --bg-muted: #F4F3F0;
+  --bg-subtle: #ECEAE6;
+  --text-primary: #1A1916;
+  --text-secondary: #6B6860;
+  --text-tertiary: #A8A49D;
+  --border-default: rgba(0, 0, 0, 0.07);
+  --border-hover: rgba(0, 0, 0, 0.14);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.10), 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* Sidebar */
+  --sidebar-bg: #111110;
+  --sidebar-text: rgba(255, 255, 255, 0.90);
+  --sidebar-muted: rgba(255, 255, 255, 0.45);
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+}
+
+/* ── Dark mode ── */
+.dark {
+  --bg-primary: #0E0D0C;
+  --bg-surface: #1A1917;
+  --bg-muted: #222120;
+  --bg-subtle: #2C2B29;
+  --text-primary: #E8E6E0;
+  --text-secondary: #9E9C96;
+  --text-tertiary: #5E5D59;
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.14);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --sidebar-bg: #080807;
+}
+
+/* ── Base resets ── */
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Typography helpers ── */
+.font-display { font-family: var(--font-display); }
+.font-serif { font-family: var(--font-serif); }
+.font-mono { font-family: var(--font-mono); }
+
+/* ── Focus ring ── */
+*:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
