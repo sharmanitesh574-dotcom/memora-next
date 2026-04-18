@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
 import { useUserStore } from '@/stores'
-import { User, Brain, Moon, Sun, Bell, MessageCircle, Lock, Smartphone } from 'lucide-react'
+import { User, Brain, Moon, Sun, Bell, MessageCircle, Lock, Smartphone, Phone } from 'lucide-react'
 
 export default function SettingsPage() {
   const user = useUserStore((s) => s.user)
@@ -14,12 +14,16 @@ export default function SettingsPage() {
   const [profileData, setProfileData] = useState(null)
   const [tgStatus, setTgStatus] = useState(null)
   const [tgLink, setTgLink] = useState(null)
+  const [waStatus, setWaStatus] = useState(null)
+  const [waCode, setWaCode] = useState(null)
+  const [waLoading, setWaLoading] = useState(false)
   const [changePass, setChangePass] = useState({ current: '', new: '', status: '' })
 
   useEffect(() => {
     setDarkMode(document.documentElement.classList.contains('dark'))
     loadProfile()
     loadTelegramStatus()
+    loadWhatsAppStatus()
   }, [])
 
   async function loadProfile() {
@@ -57,6 +61,31 @@ export default function SettingsPage() {
     try {
       const d = await api.post('/telegram/generate-link', {})
       setTgLink(d.link)
+    } catch {}
+  }
+
+  async function loadWhatsAppStatus() {
+    try {
+      const d = await api.get('/whatsapp/status')
+      setWaStatus(d)
+    } catch {}
+  }
+
+  async function connectWhatsApp() {
+    setWaLoading(true)
+    try {
+      const d = await api.post('/whatsapp/generate-link', {})
+      setWaCode(d)
+    } catch {} finally {
+      setWaLoading(false)
+    }
+  }
+
+  async function unlinkWhatsApp() {
+    try {
+      await api.del('/whatsapp/unlink')
+      setWaStatus({ linked: false })
+      setWaCode(null)
     } catch {}
   }
 
@@ -183,6 +212,76 @@ export default function SettingsPage() {
               style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
             >
               Connect Telegram
+            </button>
+          )}
+        </Section>
+
+        {/* WhatsApp */}
+        <Section title="WhatsApp" icon={Phone}>
+          <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
+            Send thoughts, voice notes, or images via WhatsApp — they become memories automatically.
+          </p>
+          {waStatus?.linked ? (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full" style={{ background: 'var(--color-emerald)' }} />
+                <p className="text-xs font-medium" style={{ color: 'var(--color-emerald)' }}>
+                  Connected — {waStatus.name} ({waStatus.number})
+                </p>
+              </div>
+              <p className="text-[11px] mb-3" style={{ color: 'var(--text-tertiary)' }}>
+                Linked {waStatus.linkedAt ? new Date(waStatus.linkedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
+              </p>
+              <button
+                onClick={unlinkWhatsApp}
+                className="text-xs px-3 py-1.5 rounded-lg cursor-pointer"
+                style={{ color: 'var(--color-coral)', border: '1px solid rgba(209,78,107,0.3)' }}
+              >
+                Disconnect WhatsApp
+              </button>
+            </div>
+          ) : waCode ? (
+            <div
+              className="rounded-xl p-4"
+              style={{ background: 'var(--bg-muted)', border: '1px solid var(--border-default)' }}
+            >
+              <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                Step 1: Save this number in your contacts
+              </p>
+              <p className="text-sm font-mono font-semibold mb-3" style={{ color: 'var(--color-brand)' }}>
+                {process.env.NEXT_PUBLIC_WA_NUMBER || '+1 (XXX) XXX-XXXX'}
+              </p>
+              <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                Step 2: Send this message on WhatsApp
+              </p>
+              <div
+                className="flex items-center justify-between rounded-lg px-3 py-2.5 mb-2"
+                style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)' }}
+              >
+                <code className="text-sm font-mono font-bold tracking-wide" style={{ color: 'var(--color-brand)' }}>
+                  /link {waCode.code}
+                </code>
+                <button
+                  onClick={() => { navigator.clipboard.writeText(`/link ${waCode.code}`); }}
+                  className="text-[10px] px-2 py-1 rounded cursor-pointer"
+                  style={{ background: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
+                >
+                  Copy
+                </button>
+              </div>
+              <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                Code expires in 15 minutes
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={connectWhatsApp}
+              disabled={waLoading}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium cursor-pointer transition-colors"
+              style={{ background: '#25D366', color: '#fff', border: 'none' }}
+            >
+              <Phone size={14} />
+              {waLoading ? 'Generating code...' : 'Connect WhatsApp'}
             </button>
           )}
         </Section>
