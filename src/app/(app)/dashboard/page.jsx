@@ -7,6 +7,8 @@ import { api } from '@/lib/api'
 import { QuickCapture } from '@/components/capture/QuickCapture'
 import { MemoryCard } from '@/components/memory/MemoryCard'
 import { ActionItems } from '@/components/insights/ActionItems'
+import { ThisDay } from '@/components/insights/ThisDay'
+import { WeeklyReview } from '@/components/insights/WeeklyReview'
 
 export default function DashboardPage() {
   const user = useUserStore((s) => s.user)
@@ -15,6 +17,8 @@ export default function DashboardPage() {
   const getStats = useMemoryStore((s) => s.getStats)
   const greeting = useGreeting(user?.name)
   const [focus, setFocus] = useState(null)
+  const [showReview, setShowReview] = useState(false)
+  const isSunday = new Date().getDay() === 0
 
   useEffect(() => {
     if (memories.length >= 2) {
@@ -68,6 +72,33 @@ export default function DashboardPage() {
 
         {/* Action items */}
         <ActionItems />
+
+        {/* This day — memory resurfacing */}
+        <ThisDay />
+
+        {/* Weekly review trigger (always available, highlighted on Sundays) */}
+        <button
+          onClick={() => setShowReview(true)}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-5 cursor-pointer transition-all hover:-translate-y-0.5 text-left"
+          style={{
+            background: isSunday ? 'rgba(91,71,224,0.06)' : 'var(--bg-surface)',
+            border: `1px solid ${isSunday ? 'rgba(91,71,224,0.2)' : 'var(--border-default)'}`,
+          }}
+        >
+          <span className="text-lg">{isSunday ? '✨' : '📋'}</span>
+          <div className="flex-1">
+            <p className="text-sm font-medium" style={{ color: isSunday ? 'var(--color-brand)' : 'var(--text-primary)' }}>
+              {isSunday ? 'It\'s Sunday — time for your weekly review' : 'Weekly review'}
+            </p>
+            <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+              Reflect on your week, set next week's intention
+            </p>
+          </div>
+          <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>→</span>
+        </button>
+
+        {/* Weekly review modal */}
+        <WeeklyReview isOpen={showReview} onClose={() => setShowReview(false)} />
 
         {/* Recent memories */}
         <div className="flex items-center justify-between mb-4 mt-2">
