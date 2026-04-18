@@ -31,13 +31,15 @@ export function QuickCapture() {
         body.append('file', file)
       }
 
-      await createMemory(body)
+      const data = await createMemory(body)
       setContent('')
       setTitle('')
       setFile(null)
 
       // Trigger background enrichment
-      // (handled by the existing Express API)
+      if (data?.memory?.id) {
+        api.post(`/intelligence/enrich/${data.memory.id}`, {}).catch(() => {})
+      }
     } catch (err) {
       console.error('Save failed:', err)
     } finally {
